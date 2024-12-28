@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fin-X: Financial Calculators</title>
+    <link rel="stylesheet" href="{% static 'calculators/styles.css' %}">
+</head>
+<body>
+    <header class="header">
+        <h1>Welcome to Fin-X</h1>
+        <p>Your one-stop solution for financial calculations</p>
+    </header>
+
+    <main class="main-content">
+
+        <div class="calculator-grid">
+            <div class="calculator-card">
+                <h3>Recurring Deposit (RD) Calculator</h3>
+                <p>Plan your savings and calculate the maturity amount for your RD.</p>
+                <a href="{% url 'rd_calculator' %}" class="btn">RD Calculator</a>
+            </div>
+            <div class="calculator-card">
+                <h3>Post Office MIS Calculator</h3>
+                <p>Estimate your monthly income from Post Office MIS schemes.</p>
+                <a href="{% url 'mis_calculator' %}" class="btn">MIS Calculator</a>
+            </div>
+            <div class="calculator-card">
+                <h3>GST Calculator</h3>
+                <p>Quickly calculate GST for your transactions.</p>
+                <a href="{% url 'gst_calculator' %}" class="btn">GST Calculator</a>
+            </div>
+            <div class="calculator-card">
+                <h3>Simple Interest Calculator</h3>
+                <p>Find out the interest earned on your principal amount.</p>
+                <a href="{% url 'simple_interest_calculator' %}" class="btn">Simple Interest</a>
+            </div>
+            <div class="calculator-card">
+                <h3>Compound Interest Calculator</h3>
+                <p>Compute your wealth growth with compound interest.</p>
+                <a href="{% url 'compound_interest_calculator' %}" class="btn">Compound Interest</a>
+            </div>
+            <div class="calculator-card">
+                <h3>Sukanya Samriddhi Yojana Calculator</h3>
+                <p>Calculate the returns from this government savings scheme.</p>
+                <a href="{% url 'sukanya_calculator' %}" class="btn">SSY Calculator</a>
+            </div>
+            <div class="calculator-card">
+                <h3>SIP Calculator</h3>
+                <p>Plan your investments with our SIP calculation tool.</p>
+                <a href="{% url 'sip_calculator' %}" class="btn">SIP Calculator</a>
+            </div>
+            <div class="calculator-card">
+                <h3>Fixed Deposit Calculator</h3>
+                <p>Estimate your FD returns based on tenure and interest rates.</p>
+                <a href="{% url 'fd_calculator' %}" class="btn">FD Calculator</a>
+            </div>
+            <div class="calculator-card">
+                <h3>Loan Foreclosure Calculator</h3>
+                <p>Determine the amount required to foreclose your loan early.</p>
+                <a href="{% url 'foreclosure_calculator' %}" class="btn">EMI Calculator</a>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>Fin-X &copy; 2024. All rights reserved.</p>
+    </footer>
+</body>
+</html>
+

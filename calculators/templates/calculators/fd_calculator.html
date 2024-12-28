@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fixed Deposit Calculator</title>
+    <style>
+                .header {
+            background-color: #4caf50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 2.5rem;
+        }
+
+        .header a {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 10px 20px;
+            color: white;
+            text-decoration: none;
+            background-color: #007bff;
+            border-radius: 5px;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 30px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            
+            margin-bottom: 20px;
+        }
+
+        form {
+            margin-bottom: 20px;
+        }
+
+        label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: #fff;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-right: 10px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .results {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 4px;
+            margin-top: 20px;
+            font-size: 16px;
+        }
+
+        .results p {
+            margin: 10px 0;
+        }
+
+        .results strong {
+            color: #4CAF50;
+        }
+
+        .clear-btn {
+            background-color: #f44336;
+        }
+
+        .clear-btn:hover {
+            background-color: #d32f2f;
+        }
+    </style>
+    <script>
+        function calculateFD() {
+            const principal = parseFloat(document.getElementById("principal").value);
+            const rate = parseFloat(document.getElementById("rate").value) / 100;
+            const timePeriod = parseFloat(document.getElementById("time").value);
+            const timeUnit = document.getElementById("timeUnit").value;
+            const frequency = document.getElementById("frequency").value;
+
+            if (!principal || !rate || !timePeriod || !frequency) {
+                alert("Please enter all the required inputs.");
+                return;
+            }
+
+            // Convert time period to years based on the selected unit
+            let timeInYears = 0;
+            if (timeUnit === "days") {
+                timeInYears = timePeriod / 365;
+            } else if (timeUnit === "months") {
+                timeInYears = timePeriod / 12;
+            } else if (timeUnit === "years") {
+                timeInYears = timePeriod;
+            }
+
+            // Determine compounding frequency
+            let n = 1; // Default to yearly
+            if (frequency === "monthly") n = 12;
+            if (frequency === "quarterly") n = 4;
+            if (frequency === "half-yearly") n = 2;
+
+            // FD Formula: A = P * (1 + r/n)^(n*t)
+            const maturityValue = principal * Math.pow(1 + rate / n, n * timeInYears);
+            const interestEarned = maturityValue - principal;
+
+            // Update Results
+            document.getElementById("investedAmount").innerText = principal.toFixed(2);
+            document.getElementById("maturityValue").innerText = maturityValue.toFixed(2);
+            document.getElementById("interestEarned").innerText = interestEarned.toFixed(2);
+        }
+
+        function clearInputs() {
+            document.getElementById("principal").value = "";
+            document.getElementById("rate").value = "";
+            document.getElementById("time").value = "";
+            document.getElementById("timeUnit").value = "years";
+            document.getElementById("frequency").value = "yearly";
+            document.getElementById("investedAmount").innerText = "0.00";
+            document.getElementById("maturityValue").innerText = "0.00";
+            document.getElementById("interestEarned").innerText = "0.00";
+        }
+    </script>
+</head>
+<body>
+    <header class="header">
+        <h1>Fixed Deposit Calculator</h1>
+        <a href="{% url 'dashboard' %}" class="btn">Back to Home</a>
+    </header>
+    <div class="container">
+        <h1>Fixed Deposit Calculator</h1>
+        <form onsubmit="event.preventDefault(); calculateFD();">
+            <label for="principal">Principal Amount (₹):</label>
+            <input type="number" id="principal" placeholder="Enter amount" required>
+
+            <label for="rate">Rate of Interest (%):</label>
+            <input type="number" id="rate" placeholder="Enter annual interest rate" required>
+
+            <label for="time">Period:</label>
+            <input type="number" id="time" placeholder="Enter time period" required>
+            <select id="timeUnit">
+                <option value="days">Days</option>
+                <option value="months">Months</option>
+                <option value="years" selected>Years</option>
+            </select>
+
+            <label for="frequency">Compounding Frequency:</label>
+            <select id="frequency">
+                <option value="monthly">Monthly</option>
+                <option value="quarterly">Quarterly</option>
+                <option value="half-yearly">Half-Yearly</option>
+                <option value="yearly" selected>Yearly</option>
+            </select>
+
+            <button type="submit">Calculate</button>
+            <button type="button" class="clear-btn" onclick="clearInputs()">Clear</button>
+        </form>
+
+        <div class="results">
+            <h2>Results:</h2>
+            <p><strong>You Invested:</strong> ₹<span id="investedAmount">0.00</span></p>
+            <p><strong>Maturity Value:</strong> ₹<span id="maturityValue">0.00</span></p>
+            <p><strong>Interest Earned:</strong> ₹<span id="interestEarned">0.00</span></p>
+        </div>
+    </div>
+</body>
+</html>

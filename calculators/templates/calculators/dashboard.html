@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Fin-X</title>
+    <style>
+        /* Global Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        h1 {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .btn-1 {
+            display: inline-block;
+            padding: 10px 15px;
+            background-color: #755eda;
+            color: #fff;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 15px;
+            background-color: #13b454;
+            color: #fff;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn:hover {
+            background-color: #45a049;
+        }
+
+        /* Header */
+        header {
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .header-logo {
+            font-size: 20px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        header a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        header a:hover {
+            text-decoration: underline;
+        }
+
+        /* Calculator Grid */
+        .calculator-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 20px auto;
+        }
+
+        /* Calculator Cards */
+        .calculator-card {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .calculator-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .calculator-card h3 {
+            margin-bottom: 15px;
+            color: #4CAF50;
+        }
+
+        .calculator-card p {
+            margin-bottom: 20px;
+            color: #555;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 20px;
+            background-color: #4CAF50;
+            color: white;
+            margin-top: 20px;
+        }
+
+        footer p {
+            margin: 0;
+        }
+
+        footer a {
+            color: white;
+            font-weight: bold;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 24px;
+            }
+
+            .btn {
+                font-size: 14px;
+                padding: 8px 12px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .calculator-card {
+                padding: 15px;
+            }
+
+            .calculator-card h3 {
+                font-size: 18px;
+            }
+
+            .calculator-card p {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-logo">Fin-X</div>
+        <h1>Welcome, {{ user.username }}</h1>
+        <form action="{% url 'logout' %}" method="POST" style="display: inline;">
+            {% csrf_token %}
+            <button type="submit" class="btn-1">Logout</button>
+        </form>
+    </header>
+
+    <div class="calculator-grid">
+        <div class="calculator-card">
+            <h3>Recurring Deposit (RD) Calculator</h3>
+            <p>Plan your savings and calculate the maturity amount for your RD.</p>
+            <a href="{% url 'rd_calculator' %}" class="btn">RD Calculator</a>
+        </div>
+        <div class="calculator-card">
+            <h3>Post Office MIS Calculator</h3>
+            <p>Estimate your monthly income from Post Office MIS schemes.</p>
+            <a href="{% url 'mis_calculator' %}" class="btn">MIS Calculator</a>
+        </div>
+        <div class="calculator-card">
+            <h3>GST Calculator</h3>
+            <p>Quickly calculate GST for your transactions.</p>
+            <a href="{% url 'gst_calculator' %}" class="btn">GST Calculator</a>
+        </div>
+        <div class="calculator-card">
+            <h3>Simple Interest Calculator</h3>
+            <p>Find out the interest earned on your principal amount.</p>
+            <a href="{% url 'simple_interest_calculator' %}" class="btn">Simple Interest</a>
+        </div>
+        <div class="calculator-card">
+            <h3>Compound Interest Calculator</h3>
+            <p>Compute your wealth growth with compound interest.</p>
+            <a href="{% url 'compound_interest_calculator' %}" class="btn">Compound Interest</a>
+        </div>
+        <div class="calculator-card">
+            <h3>Sukanya Samriddhi Yojana Calculator</h3>
+            <p>Calculate the returns from this government savings scheme.</p>
+            <a href="{% url 'sukanya_calculator' %}" class="btn">SSY Calculator</a>
+        </div>
+        <div class="calculator-card">
+            <h3>SIP Calculator</h3>
+            <p>Plan your investments with our SIP calculation tool.</p>
+            <a href="{% url 'sip_calculator' %}" class="btn">SIP Calculator</a>
+        </div>
+        <div class="calculator-card">
+            <h3>Fixed Deposit Calculator</h3>
+            <p>Estimate your FD returns based on tenure and interest rates.</p>
+            <a href="{% url 'fd_calculator' %}" class="btn">FD Calculator</a>
+        </div>
+        <div class="calculator-card">
+            <h3>Loan Foreclosure Calculator</h3>
+            <p>Determine the amount required to foreclose your loan early.</p>
+            <a href="{% url 'foreclosure_calculator' %}" class="btn">EMI Calculator</a>
+        </div>
+    </div>
+
+    <footer>
+        <p>Fin-X &copy; 2024. All rights reserved. <a href="#">Privacy Policy</a></p>
+    </footer>
+</body>
+</html>

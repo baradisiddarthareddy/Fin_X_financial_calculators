@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GST Calculator | Fin-X</title>
+    <link rel="stylesheet" href="{% static 'calculators/styles.css' %}">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+
+        .header {
+            background-color: #4caf50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 2.5rem;
+        }
+
+        .header a {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 10px 20px;
+            color: white;
+            text-decoration: none;
+            background-color: #007bff;
+            border-radius: 5px;
+        }
+
+        .header a:hover {
+            background-color: #0056b3;
+        }
+
+        .calculator-form {
+            max-width: 600px;
+            margin: 30px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .calculator-form h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #4caf50;
+        }
+
+        label {
+            display: block;
+            margin: 15px 0 5px;
+            font-weight: bold;
+        }
+
+        select, input[type="range"], input[type="checkbox"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            outline: none;
+        }
+
+        select:hover, input[type="range"]:hover {
+            border-color: #4caf50;
+        }
+
+        #result {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f1f1f1;
+            border-radius: 8px;
+        }
+
+        #result h3 {
+            margin-bottom: 10px;
+            color: #4caf50;
+        }
+
+        #result p {
+            margin: 5px 0;
+            font-size: 1rem;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 10px 0;
+            background: #4caf50;
+            color: white;
+            margin-top: 30px;
+        }
+    </style>
+    <script>
+        function updateValue(id, value) {
+            document.getElementById(id).textContent = value;
+            calculateGST();
+        }
+
+        function calculateGST() {
+            const totalAmount = parseFloat(document.getElementById("total_amount").value);
+            const gstRate = parseFloat(document.getElementById("gst_rate").value);
+            const isInclusive = document.getElementById("gst_inclusive").checked;
+            const isExclusive = document.getElementById("gst_exclusive").checked;
+
+            let gstAmount, preGSTAmount, postGSTAmount;
+
+            if (isInclusive) {
+                // Inclusive GST
+                gstAmount = (totalAmount * gstRate) / (100 + gstRate);
+                preGSTAmount = totalAmount - gstAmount;
+
+                document.getElementById("gst_amount").textContent = gstAmount.toFixed(2);
+                document.getElementById("pre_gst_amount").textContent = preGSTAmount.toFixed(2);
+
+                document.getElementById("inclusive_results").style.display = "block";
+                document.getElementById("exclusive_results").style.display = "none";
+            }
+
+            if (isExclusive) {
+                // Exclusive GST
+                gstAmount = (totalAmount * gstRate) / 100;
+                postGSTAmount = totalAmount + gstAmount;
+
+                document.getElementById("gst_amount_exclusive").textContent = gstAmount.toFixed(2);
+                document.getElementById("post_gst_amount").textContent = postGSTAmount.toFixed(2);
+
+                document.getElementById("inclusive_results").style.display = "none";
+                document.getElementById("exclusive_results").style.display = "block";
+            }
+        }
+    </script>
+</head>
+<body>
+    <header class="header">
+        <h1>GST Calculator</h1>
+        <a href="{% url 'dashboard' %}">Back to Home</a>
+    </header>
+
+    <main class="calculator-form">
+        <h2>Enter Details for GST Calculation</h2>
+        <form method="post">
+            {% csrf_token %}
+            <label for="total_amount">Total Amount (₹):</label>
+            <input type="range" id="total_amount" name="total_amount" min="5000" max="500000" step="500" value="5000" oninput="updateValue('total-amount-value', this.value)">
+            <span id="total-amount-value">5000</span>
+
+            <label for="gst_rate">GST Rate:</label>
+            <select id="gst_rate" name="gst_rate" onchange="calculateGST()">
+                <option value="5">5%</option>
+                <option value="12">12%</option>
+                <option value="18">18%</option>
+                <option value="28">28%</option>
+            </select>
+
+            <label>
+                <input type="checkbox" id="gst_exclusive" onclick="calculateGST()"> GST Exclusive
+            </label>
+            <label>
+                <input type="checkbox" id="gst_inclusive" onclick="calculateGST()"> GST Inclusive
+            </label>
+        </form>
+
+        <div id="inclusive_results" style="display: none;">
+            <h3>Inclusive GST Results:</h3>
+            <p>GST Amount: ₹<span id="gst_amount">0.00</span></p>
+            <p>Pre-GST Amount: ₹<span id="pre_gst_amount">0.00</span></p>
+        </div>
+
+        <div id="exclusive_results" style="display: none;">
+            <h3>Exclusive GST Results:</h3>
+            <p>GST Amount: ₹<span id="gst_amount_exclusive">0.00</span></p>
+            <p>Post-GST Amount: ₹<span id="post_gst_amount">0.00</span></p>
+        </div>
+    </main>
+
+
+</body>
+</html>

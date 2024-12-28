@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signup - Fin-X</title>
+    <style>
+        /* Global Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        h1 {
+            margin-bottom: 10px;
+            color: #4CAF50;
+            font-size: 36px;
+        }
+
+        .welcome-note {
+            font-size: 18px;
+            color: #555;
+            margin-bottom: 20px;
+            text-align: center;
+            max-width: 400px;
+        }
+
+        .quote {
+            font-style: italic;
+            font-size: 16px;
+            color: #777;
+            margin-bottom: 30px;
+            text-align: center;
+            max-width: 500px;
+        }
+
+        form {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px 30px;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        form p {
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        .error-message {
+            font-size: 14px;
+            color: red;
+            margin-top: 5px;
+            font-style: italic;
+            display: none; /* Hidden initially */
+        }
+
+        .has-error .error-message {
+            display: block;
+        }
+
+        form input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        form input:focus {
+            border-color: #4CAF50;
+            outline: none;
+        }
+
+        form button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        form button:hover {
+            background-color: #45a049;
+        }
+
+        p {
+            margin-top: 15px;
+            text-align: center;
+        }
+
+        p a {
+            color: #4CAF50;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        p a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <h1>Welcome to Fin-X!</h1>
+    <p class="welcome-note">
+        Your financial journey starts here. Join Fin-X and take control of your future with our powerful financial calculators.
+    </p>
+    <p class="quote">
+        "Financial freedom is not a dream; it's a calculated plan. Let Fin-X help you every step of the way."
+    </p>
+    <form method="POST">
+        {% csrf_token %}
+        {% for field in form %}
+        <p class="{% if field.errors %}has-error{% endif %}">
+            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+            {% if field.errors %}
+                <span class="error-message">
+                    {% for error in field.errors %}
+                        {{ error }}
+                    {% endfor %}
+                </span>
+            {% endif %}
+        </p>
+        {% endfor %}
+        <button type="submit">Signup</button>
+    </form>
+    <p>Already have an account? <a href="{% url 'login' %}">Login here</a>.</p>
+</body>
+</html>

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recurring Deposit Calculator</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css">
+    <style>
+        .header {
+            background: #4caf50;
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+        .header a {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 10px 20px;
+            color: white;
+            text-decoration: none;
+            background-color: #007bff;
+            border-radius: 5px;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 2.5rem;
+        }
+
+        .header p {
+            margin: 5px 0;
+            font-size: 1.2rem;
+        }
+
+        body {
+            background-color: #f9f9f9;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            max-width: 500px; /* Limit the width */
+            margin: 30px auto; /* Center horizontally */
+            background: white;
+            padding: 20px; /* Reduce padding */
+            border-radius: 8px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .slider-value {
+            font-weight: bold;
+            color: #0a552b39;
+        }
+    </style>
+    <script>
+        function updateValues() {
+            // Get input values
+            const monthlyDeposit = parseFloat(document.getElementById("monthly_deposit").value) || 0;
+            const months = parseInt(document.getElementById("months").value) || 0;
+            const interestRate = parseFloat(document.getElementById("interest_rate").value) || 0;
+
+            // Update displayed input values
+            document.getElementById("deposit_value").innerText = monthlyDeposit;
+            document.getElementById("months_value").innerText = months;
+            document.getElementById("rate_value").innerText = interestRate;
+
+            // Perform calculations
+            const totalDeposit = monthlyDeposit * months;
+            const quarterlyRate = (interestRate / 4) / 100;
+            const totalQuarters = months / 3;
+
+            let maturityAmount = 0;
+
+            // Maturity formula: M = P * [(1 + r)^n - 1] / [1 - (1 + r)^(-1/3)]
+            if (quarterlyRate > 0 && totalQuarters > 0) {
+                maturityAmount = 
+                    monthlyDeposit *
+                    (Math.pow(1 + quarterlyRate, totalQuarters) - 1) /
+                    (1 - Math.pow(1 + quarterlyRate, -1 / 3));
+            }
+
+            const totalInterest = maturityAmount - totalDeposit;
+
+            // Update outputs dynamically
+            document.getElementById("total_deposit").innerText = totalDeposit.toFixed(2);
+            document.getElementById("total_interest").innerText = totalInterest.toFixed(2);
+            document.getElementById("maturity_amount").innerText = maturityAmount.toFixed(2);
+        }
+    </script>
+</head>
+<body>
+    <header class="header">
+        <h1>Recurring Deposit Calculator</h1>
+        <a href="{% url 'dashboard' %}" class="btn">Back to Home</a>
+    </header>
+    <div class="container">
+        <form oninput="updateValues()">
+            <div class="mb-4">
+                <label for="monthly_deposit" class="form-label">Monthly Deposit Amount (₹):</label>
+                <input type="number" id="monthly_deposit" class="form-control" value="5000" min="100" max="100000">
+                <p class="text-muted">₹<span id="deposit_value" class="slider-value">5000</span></p>
+            </div>
+
+            <div class="mb-4">
+                <label for="months" class="form-label">Number of Months:</label>
+                <input type="range" id="months" class="form-range" min="6" max="120" value="6" step="1">
+                <p class="text-muted"><span id="months_value" class="slider-value">6</span></p>
+            </div>
+
+            <div class="mb-4">
+                <label for="interest_rate" class="form-label">RD Interest Rate (%):</label>
+                <input type="range" id="interest_rate" class="form-range" min="5" max="16" step="0.1" value="5.0">
+                <p class="text-muted"><span id="rate_value" class="slider-value">5</span>%</p>
+            </div>
+
+            <div class="mt-4">
+                <h4>Results</h4>
+                <p>Total Deposit: ₹<span id="total_deposit"></span></p>
+                <p>Total Interest Earned: ₹<span id="total_interest"></span></p>
+                <p>Total Maturity Amount: ₹<span id="maturity_amount"></span></p>
+            </div>
+        </form>
+    </div>
+</body>
+</html>
+

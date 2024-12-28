@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loan Foreclosure Calculator</title>
+    <style>
+        .header {
+            background-color: #4caf50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 2.5rem;
+        }
+
+        .header a {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 10px 20px;
+            color: white;
+            text-decoration: none;
+            background-color: #007bff;
+            border-radius: 5px;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 600px; /* Reduced width */
+            margin: 30px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            
+            margin-bottom: 20px;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        input[type="range"],
+        select {
+            width: 100%;
+        }
+
+        .slider-value {
+            font-weight: bold;
+            margin-top: 5px;
+            text-align: right;
+        }
+
+        .results {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 4px;
+            margin-top: 20px;
+            font-size: 16px;
+        }
+
+        .results p {
+            margin: 10px 0;
+        }
+
+        .results strong {
+            color: #4CAF50;
+        }
+    </style>
+    <script>
+        function calculateForeclosure() {
+            const loanAmount = parseFloat(document.getElementById("loanAmount").value);
+            const interestRate = parseFloat(document.getElementById("interestRate").value) / 100 / 12;
+            const tenureMonths = parseFloat(document.getElementById("tenure").value);
+            const foreclosureMonth = parseFloat(document.getElementById("foreclosureMonth").value);
+            const foreclosureChargeRate = parseFloat(document.getElementById("foreclosureCharge").value) / 100;
+
+            if (!loanAmount || !interestRate || !tenureMonths || !foreclosureMonth || !foreclosureChargeRate) {
+                alert("Please enter valid inputs.");
+                return;
+            }
+
+            // Step 1: Calculate EMI
+            const emi = (loanAmount * interestRate * Math.pow(1 + interestRate, tenureMonths)) /
+                (Math.pow(1 + interestRate, tenureMonths) - 1);
+
+            // Step 2: Calculate Outstanding Principal at Foreclosure Month
+            let outstandingPrincipal = loanAmount;
+            for (let i = 1; i <= foreclosureMonth; i++) {
+                const interest = outstandingPrincipal * interestRate;
+                const principalComponent = emi - interest;
+                outstandingPrincipal -= principalComponent;
+            }
+
+            // Step 3: Calculate Foreclosure Charges
+            const foreclosureCharges = outstandingPrincipal * foreclosureChargeRate;
+
+            // Step 4: Calculate Total Payment and Foreclosure Amount
+            const totalPayment = emi * tenureMonths;
+            const foreclosureAmount = outstandingPrincipal + foreclosureCharges;
+
+            // Step 5: Update Results
+            document.getElementById("emiAmount").innerText = emi.toFixed(2);
+            document.getElementById("totalPayment").innerText = totalPayment.toFixed(2);
+            document.getElementById("outstandingPrincipal").innerText = outstandingPrincipal.toFixed(2);
+            document.getElementById("foreclosureAmount").innerText = foreclosureAmount.toFixed(2);
+        }
+    </script>
+</head>
+<body>
+    <header class="header">
+        <h1>Loan Foreclosure Calculator</h1>
+        <a href="{% url 'dashboard' %}">Back to Home</a>
+    </header>
+    <div class="container">
+        
+
+        <div class="input-group">
+            <label for="loanAmount">Loan Amount (₹):</label>
+            <input type="range" id="loanAmount" min="100000" max="900000" step="10000" value="100000" oninput="document.getElementById('loanAmountValue').innerText = this.value">
+            <div class="slider-value">₹<span id="loanAmountValue">100000</span></div>
+        </div>
+
+        <div class="input-group">
+            <label for="tenure">Tenure (Months):</label>
+            <input type="range" id="tenure" min="12" max="60" step="1" value="12" oninput="document.getElementById('tenureValue').innerText = this.value">
+            <div class="slider-value"><span id="tenureValue">12</span> Months</div>
+        </div>
+
+        <div class="input-group">
+            <label for="interestRate">Rate of Interest (% per annum):</label>
+            <input type="range" id="interestRate" min="12" max="26" step="0.1" value="12" oninput="document.getElementById('interestRateValue').innerText = this.value">
+            <div class="slider-value"><span id="interestRateValue">12</span>%</div>
+        </div>
+
+        <div class="input-group">
+            <label for="foreclosureMonth">Months of Foreclosure:</label>
+            <input type="range" id="foreclosureMonth" min="12" max="36" step="1" value="12" oninput="document.getElementById('foreclosureMonthValue').innerText = this.value">
+            <div class="slider-value"><span id="foreclosureMonthValue">12</span> Months</div>
+        </div>
+
+        <div class="input-group">
+            <label for="foreclosureCharge">Foreclosure Charges (%):</label>
+            <input type="range" id="foreclosureCharge" min="2" max="12" step="0.1" value="2" oninput="document.getElementById('foreclosureChargeValue').innerText = this.value">
+            <div class="slider-value"><span id="foreclosureChargeValue">2</span>%</div>
+        </div>
+
+        <button onclick="calculateForeclosure()">Calculate</button>
+
+        <div class="results">
+            <h2>Results:</h2>
+            <p><strong>EMI Amount:</strong> ₹<span id="emiAmount">0.00</span></p>
+            <p><strong>Total Payment (Principal + Interest):</strong> ₹<span id="totalPayment">0.00</span></p>
+            <p><strong>Outstanding Principal at Foreclosure:</strong> ₹<span id="outstandingPrincipal">0.00</span></p>
+            <p><strong>Foreclosure Amount:</strong> ₹<span id="foreclosureAmount">0.00</span></p>
+        </div>
+    </div>
+</body>
+</html>

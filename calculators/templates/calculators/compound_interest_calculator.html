@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compound Interest Calculator | Fin-X</title>
+    <link rel="stylesheet" href="{% static 'calculators/styles.css' %}">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+
+        .header {
+            background-color: #4caf50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 2.5rem;
+        }
+
+        .header a {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 10px 20px;
+            color: white;
+            text-decoration: none;
+            background-color: #007bff;
+            border-radius: 5px;
+        }
+
+        .header a:hover {
+            background-color: #388e3c;
+        }
+
+        .calculator-form {
+            max-width: 700px;
+            margin: 30px auto;
+            padding: 25px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .calculator-form h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #007bff;
+        }
+
+        label {
+            display: block;
+            margin: 15px 0 5px;
+            font-weight: bold;
+        }
+
+        input[type="number"], select, button {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            outline: none;
+            font-size: 1rem;
+        }
+
+        input[type="number"]:hover, select:hover, button:hover {
+            border-color: #007bff;
+        }
+
+        button {
+            background-color: #388e3c;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #2e7d32;
+        }
+
+        #result {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f1f1f1;
+            border-radius: 8px;
+            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        #result h3 {
+            margin-bottom: 15px;
+            color: #007bff;
+        }
+
+        #result p {
+            margin: 5px 0;
+            font-size: 1.1rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            background-color: white;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        table th, table td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+
+        table th {
+            background-color: #202123;
+            color: white;
+        }
+
+        table td {
+            background-color: #f9f9f9;
+        }
+
+        table tr:hover td {
+            background-color: #e0f7fa;
+        }
+
+        .result-highlight {
+            font-weight: bold;
+            color: #388e3c;
+        }
+
+
+    </style>
+    <script>
+        function updateValue(id, value) {
+            document.getElementById(id).textContent = value;
+            calculateCompoundInterest();
+        }
+
+        function calculateCompoundInterest() {
+            var principal = parseFloat(document.getElementById("principal").value);
+            var rate = parseFloat(document.getElementById("rate").value);
+            var time = parseFloat(document.getElementById("time").value);
+            var timeUnit = document.getElementById("time_unit").value;
+            var compoundingFrequency = document.getElementById("compounding_frequency").value;
+
+            // Convert time to years if it's in months
+            if (timeUnit === "months") {
+                time = time / 12;
+            }
+
+            // Convert frequency to an integer value for calculation
+            var n = parseInt(compoundingFrequency);
+
+            // Compound Interest formula
+            var totalAmount = principal * Math.pow(1 + (rate / (n * 100)), n * time);
+            var compoundInterest = totalAmount - principal;
+
+            var summaryTable = '';
+            var accumulatedAmount = principal;
+
+            // Calculate year-by-year breakdown
+            for (var year = 1; year <= time; year++) {
+                accumulatedAmount = principal * Math.pow(1 + (rate / (n * 100)), n * year);
+                var yearInterest = accumulatedAmount - (principal * Math.pow(1 + (rate / (n * 100)), n * (year - 1)));
+                summaryTable += `
+                    <tr>
+                        <td>Year ${year}</td>
+                        <td>₹${yearInterest.toFixed(2)}</td>
+                        <td>₹${accumulatedAmount.toFixed(2)}</td>
+                    </tr>
+                `;
+            }
+
+            // Update the results
+            document.getElementById("compound_interest").textContent = compoundInterest.toFixed(2);
+            document.getElementById("total_amount").textContent = totalAmount.toFixed(2);
+            document.getElementById("summary_table").innerHTML = summaryTable;
+        }
+    </script>
+</head>
+<body>
+    <header class="header">
+        <h1>Compound Interest Calculator</h1>
+        <a href="{% url 'dashboard' %}" class="btn">Back to Home</a>
+    </header>
+
+    <main class="calculator-form">
+        <h2>Enter Your Investment Details</h2>
+        <form method="post">
+            {% csrf_token %}
+            <label for="principal">Principal Amount (₹):</label>
+            <input type="number" id="principal" name="principal" value="" min="1" oninput="updateValue('principal-value', this.value)">
+            
+
+            <label for="rate">Rate of Interest (%):</label>
+            <input type="number" id="rate" name="rate" value="" min="0" step="0.1" oninput="updateValue('rate-value', this.value)">
+            
+
+            <label for="time">Time Period:</label>
+            <input type="number" id="time" name="time" value="" min="1" oninput="updateValue('time-value', this.value)">
+            
+
+            <select id="time_unit" name="time_unit" onchange="calculateCompoundInterest()">
+                <option value="years" selected>Years</option>
+                <option value="months">Months</option>
+            </select>
+
+            <label for="compounding_frequency">Compounding Frequency:</label>
+            <select id="compounding_frequency" name="compounding_frequency" onchange="calculateCompoundInterest()">
+                <option value="1" selected>Annually</option>
+                <option value="2">Semi-Annually</option>
+                <option value="4">Quarterly</option>
+                <option value="12">Monthly</option>
+            </select>
+
+            <button type="button" onclick="calculateCompoundInterest()">Calculate</button>
+        </form>
+
+        <div id="result">
+            <h3>Results:</h3>
+            <p>Compound Interest Earned: ₹<span id="compound_interest" class="result-highlight"></span></p>
+            <p>Total Amount (Principal + Interest): ₹<span id="total_amount" class="result-highlight"></span></p>
+
+            <h3>Yearly Breakdown:</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Year</th>
+                        <th>Interest Earned (₹)</th>
+                        <th>Total Amount (₹)</th>
+                    </tr>
+                </thead>
+                <tbody id="summary_table">
+                    <!-- Summary rows will be dynamically added here -->
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+
+</body>
+</html>

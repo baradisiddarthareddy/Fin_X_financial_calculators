@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sukanya Samriddhi Yojana Calculator</title>
+    <style>
+        .header {
+            background-color: #4caf50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 2.5rem;
+        }
+
+        .header a {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 10px 20px;
+            color: white;
+            text-decoration: none;
+            background-color: #007bff;
+            border-radius: 5px;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 30px auto;
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        h1 {
+            text-align: center;
+            
+            margin-bottom: 20px;
+        }
+
+        form {
+            margin-bottom: 20px;
+        }
+
+        label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        input[type="number"],
+        input[type="range"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        input[type="range"] {
+            cursor: pointer;
+        }
+
+        span {
+            font-weight: bold;
+            color: #007BFF;
+        }
+
+        .results {
+            background-color: #f1f1f1;
+            padding: 15px;
+            border-radius: 4px;
+            margin-top: 20px;
+        }
+
+        .results p {
+            margin: 10px 0;
+            font-size: 16px;
+        }
+
+        .results strong {
+            color: #007BFF;
+        }
+    </style>
+    <script>
+        function calculateSSY() {
+            // Input values
+            const yearlyInvestment = parseFloat(document.getElementById("yearlyInvestment").value) || 0;
+            const interestRate = parseFloat(document.getElementById("interestRate").value) || 0;
+            const startYear = parseInt(document.getElementById("startYear").value);
+
+            // Validate inputs
+            if (yearlyInvestment < 250 || yearlyInvestment > 150000) {
+                document.getElementById("totalInvestment").innerText = "Invalid!";
+                document.getElementById("maturityAmount").innerText = "Invalid!";
+                document.getElementById("interestEarned").innerText = "Invalid!";
+                return;
+            }
+
+            if (interestRate < 1) {
+                document.getElementById("totalInvestment").innerText = "Invalid!";
+                document.getElementById("maturityAmount").innerText = "Invalid!";
+                document.getElementById("interestEarned").innerText = "Invalid!";
+                return;
+            }
+
+            // Constants
+            const depositYears = 15; // Deposits made for 15 years
+            const totalYears = 21; // Maturity period
+            const quarterlyRate = interestRate / 400; // Quarterly rate
+            const totalQuarters = totalYears * 4;
+
+            let maturityAmount = 0;
+
+            // Calculate maturity amount for each deposit
+            for (let year = 0; year < depositYears; year++) {
+                const remainingQuarters = totalQuarters - year * 4;
+                const futureValue = yearlyInvestment * Math.pow(1 + quarterlyRate, remainingQuarters);
+                maturityAmount += futureValue;
+            }
+
+            // Total investment
+            const totalInvestment = yearlyInvestment * depositYears;
+
+            // Interest earned
+            const interestEarned = maturityAmount - totalInvestment;
+
+            // Output results
+            document.getElementById("maturityYear").innerText = startYear + totalYears;
+            document.getElementById("totalInvestment").innerText = totalInvestment.toFixed(2);
+            document.getElementById("maturityAmount").innerText = maturityAmount.toFixed(2);
+            document.getElementById("interestEarned").innerText = interestEarned.toFixed(2);
+        }
+
+        function updateStartYearDisplay() {
+            const startYear = document.getElementById("startYear").value;
+            document.getElementById("startYearDisplay").innerText = startYear;
+            calculateSSY();
+        }
+    </script>
+</head>
+<body>
+    <header class="header">
+        <h1>SSY Calculator</h1>
+        <a href="{% url 'dashboard' %}" class="btn">Back to Home</a>
+    </header>
+    <div class="container">
+        
+        <form>
+            <label for="yearlyInvestment">Yearly Investment (₹):</label>
+            <input type="number" id="yearlyInvestment" placeholder="Enter yearly investment (₹250 to ₹1,50,000)" oninput="calculateSSY()" required>
+
+            <label for="interestRate">Latest SSY Interest Rate (%):</label>
+            <input type="number" id="interestRate" min="1" step="0.1" placeholder="Enter interest rate (e.g., 8.2)" oninput="calculateSSY()" required>
+
+            <label for="startYear">Start Year:</label>
+            <input type="range" id="startYear" min="2018" max="2030" value="" step="1" oninput="updateStartYearDisplay()">
+            <span id="startYearDisplay">2018</span>
+        </form>
+
+        <div class="results">
+            <h2>Results:</h2>
+            <p><strong>Maturity Year:</strong> <span id="maturityYear"></span></p>
+            <p><strong>Total Investment:</strong> ₹<span id="totalInvestment">0.00</span></p>
+            <p><strong>Maturity Amount:</strong> ₹<span id="maturityAmount">0.00</span></p>
+            <p><strong>Interest Earned:</strong> ₹<span id="interestEarned">0.00</span></p>
+        </div>
+    </div>
+</body>
+</html>
